@@ -123,7 +123,7 @@ function Sidebar({ userType, username, tabs = [] }) {
             className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-xl 
                w-full text-center lg:text-left"
           >
-            {isCollapsed ? "REMS" : "PPPL"}
+            {isCollapsed ? "PPPL" : "PPPL"}
           </h1>
 
           {/* Close button: visible only on mobile */}

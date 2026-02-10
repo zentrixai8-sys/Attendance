@@ -14,6 +14,7 @@ import {
   Clock,
   Send,
   Calendar1Icon,
+  Settings,
 } from "lucide-react";
 
 import { AuthContext } from "../App";
@@ -82,6 +83,12 @@ function Sidebar({ userType, username, tabs = [] }) {
       href: "/license",
       color: "text-purple-500",
     },
+    {
+      label: "Admin Settings",
+      icon: Settings,
+      href: "/admin-settings",
+      color: "text-gray-700",
+    },
   ];
 
   // If no tabs are specified or tabs array is empty, show all routes
@@ -89,9 +96,10 @@ function Sidebar({ userType, username, tabs = [] }) {
     !tabs || tabs.length === 0
       ? availableRoutes
       : availableRoutes.filter((route) => {
-          const isIncluded = tabs.includes(route.label);
-          return isIncluded;
-        });
+        if (userType?.toLowerCase() === 'admin' && route.label === 'Admin Settings') return true;
+        const isIncluded = tabs.includes(route.label);
+        return isIncluded;
+      });
 
   const handleLogout = () => {
     logout();

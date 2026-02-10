@@ -18,6 +18,7 @@ import LocalTravel from "./pages/LocalTravel";
 import LocalTravelHistory from "./pages/LocalTravelHistory";
 import AdvanceRequest from "./pages/Advance";
 import Report from "./pages/Report";
+import AdminSettings from "./pages/AdminSettings";
 
 export const AuthContext = createContext(null);
 
@@ -99,6 +100,10 @@ const App = () => {
           role: foundUserRow.c?.[3]?.v || "user",
           loginTime: new Date().toISOString(),
           tabs: userTabs,
+          employeeType: foundUserRow.c?.[5]?.v || "Out Of Office",
+          officeLat: foundUserRow.c?.[6]?.v || null,
+          officeLong: foundUserRow.c?.[7]?.v || null,
+          officeRange: foundUserRow.c?.[8]?.v || null,
         };
 
         setIsAuthenticated(true);
@@ -140,7 +145,7 @@ const App = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const isAdmin = () => userType === "admin";
+  const isAdmin = () => userType?.toLowerCase() === "admin";
 
   const ProtectedRoute = ({ children, adminOnly = false }) => {
     if (!isAuthenticated) return <Navigate to="/login" />;
@@ -181,19 +186,17 @@ const App = () => {
           )}
 
           <div
-            className={`flex flex-col flex-1 overflow-hidden ${
-              isAuthenticated ? "md:ml-64" : ""
-            }`}
+            className={`flex flex-col flex-1 overflow-hidden ${isAuthenticated ? "md:ml-64" : ""
+              }`}
           >
             {notification && (
               <div
-                className={`p-4 text-sm ${
-                  notification.type === "error"
-                    ? "bg-red-100 text-red-700"
-                    : notification.type === "success"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-blue-100 text-blue-700"
-                }`}
+                className={`p-4 text-sm ${notification.type === "error"
+                  ? "bg-red-100 text-red-700"
+                  : notification.type === "success"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-blue-100 text-blue-700"
+                  }`}
               >
                 {notification.message}
               </div>
@@ -283,6 +286,14 @@ const App = () => {
                     element={
                       <ProtectedRoute>
                         <AdvanceRequest />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin-settings"
+                    element={
+                      <ProtectedRoute adminOnly={true}>
+                        <AdminSettings />
                       </ProtectedRoute>
                     }
                   />

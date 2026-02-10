@@ -18,15 +18,15 @@ const AttendanceSummaryCard = ({ attendanceData, isLoading, userRole, salesPerso
   // Helper function to check if a day is complete (next day has started or past cutoff)
   const isDayComplete = (dateStr) => {
     if (!dateStr) return false;
-    
+
     const [day, month, year] = dateStr.split("/");
     const targetDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     const currentDate = new Date();
-    
+
     // Set cutoff time to 11:59 PM of the target date
     const cutoffTime = new Date(targetDate);
     cutoffTime.setHours(23, 59, 59, 999);
-    
+
     // Day is complete if current time is past the cutoff time
     return currentDate > cutoffTime;
   };
@@ -37,45 +37,45 @@ const AttendanceSummaryCard = ({ attendanceData, isLoading, userRole, salesPerso
     if (hasLeave) {
       return { isMispunch: false, type: 'leave' };
     }
-    
+
     // If no punches at all, not a mispunch
     if (inCount === 0 && outCount === 0) {
       return { isMispunch: false, type: 'absent' };
     }
-    
+
     const isDayOver = isDayComplete(dateStr);
-    
+
     // Perfect match - no mispunch
     if (inCount === outCount) {
       return { isMispunch: false, type: 'complete' };
     }
-    
+
     // More INs than OUTs
     if (inCount > outCount) {
       if (isDayOver) {
-        return { 
-          isMispunch: true, 
+        return {
+          isMispunch: true,
           type: 'missing_out',
           details: `${inCount} IN vs ${outCount} OUT - Missing ${inCount - outCount} OUT punch(es)`
         };
       } else {
-        return { 
-          isMispunch: false, 
+        return {
+          isMispunch: false,
           type: 'in_progress',
           details: `${inCount} IN vs ${outCount} OUT - Day in progress`
         };
       }
     }
-    
+
     // More OUTs than INs (invalid case)
     if (outCount > inCount) {
-      return { 
-        isMispunch: true, 
+      return {
+        isMispunch: true,
         type: 'invalid',
         details: `${inCount} IN vs ${outCount} OUT - Invalid: More OUT than IN punches`
       };
     }
-    
+
     return { isMispunch: false, type: 'unknown' };
   };
 
@@ -93,31 +93,31 @@ const AttendanceSummaryCard = ({ attendanceData, isLoading, userRole, salesPerso
     }
 
     // Filter data for current user (admin sees all, users see only their data)
-    const userSpecificData = userRole?.toLowerCase() === "admin" 
-      ? attendanceData 
+    const userSpecificData = userRole?.toLowerCase() === "admin"
+      ? attendanceData
       : attendanceData.filter(entry => entry.salesPersonName === salesPersonName);
 
     // Calculate statistics
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
-    
+
     // Group by employee and date to calculate daily statistics
     const employeeDailyRecords = {};
-    
+
     userSpecificData.forEach(entry => {
       if (!entry.dateTime) return;
-      
+
       const dateStr = entry.dateTime.split(" ")[0];
       if (!dateStr) return;
-      
+
       const [day, month, year] = dateStr.split("/");
       const entryDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-      
+
       // Only count current month records
       if (entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear) {
         const employeeName = entry.salesPersonName || 'Unknown';
         const dateKey = `${employeeName}_${dateStr}`;
-        
+
         if (!employeeDailyRecords[dateKey]) {
           employeeDailyRecords[dateKey] = {
             employee: employeeName,
@@ -129,7 +129,7 @@ const AttendanceSummaryCard = ({ attendanceData, isLoading, userRole, salesPerso
             punches: []
           };
         }
-        
+
         if (entry.status === "IN") {
           employeeDailyRecords[dateKey].inCount++;
           employeeDailyRecords[dateKey].punches.push({
@@ -168,22 +168,22 @@ const AttendanceSummaryCard = ({ attendanceData, isLoading, userRole, salesPerso
       totalIn += dayRecord.inCount;
       totalOut += dayRecord.outCount;
       totalLeave += dayRecord.leaveCount;
-      
+
       // Determine if this is a leave day, present day, or absent day
       if (dayRecord.hasLeave) {
         // Don't count leave days as present or absent
       } else if (dayRecord.inCount > 0 || dayRecord.outCount > 0) {
         totalPresent++;
       }
-      
+
       // Check for mispunch using the new logic
       const mispunchStatus = determineMispunchStatus(
-        dayRecord.inCount, 
-        dayRecord.outCount, 
+        dayRecord.inCount,
+        dayRecord.outCount,
         dayRecord.date,
         dayRecord.hasLeave
       );
-      
+
       if (mispunchStatus.isMispunch) {
         totalMispunch++;
         mispunchDetails.push({
@@ -235,12 +235,12 @@ const AttendanceSummaryCard = ({ attendanceData, isLoading, userRole, salesPerso
           </h2>
         </div>
         <p className="text-blue-50">
-          {userRole?.toLowerCase() === "admin" 
-            ? "Complete attendance overview for current month" 
+          {userRole?.toLowerCase() === "admin"
+            ? "Complete attendance overview for current month"
             : `Monthly attendance overview for ${salesPersonName}`}
         </p>
       </div>
-      
+
       <div className="p-8">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {/* Total Present Days */}
@@ -452,7 +452,7 @@ const AttendanceHistory = ({ attendanceData, isLoading, userRole }) => {
     // Create proper Excel content with XML format
     const currentDate = new Date().toLocaleDateString();
     const fileName = `Attendance_History_${new Date().toISOString().split('T')[0]}`;
-    
+
     // Create Excel XML structure
     let excelContent = `<?xml version="1.0"?>
       <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
@@ -478,16 +478,16 @@ const AttendanceHistory = ({ attendanceData, isLoading, userRole }) => {
           <Cell><Data ss:Type="String">${row.dateTime || 'N/A'}</Data></Cell>
           <Cell><Data ss:Type="String">${row.status || 'N/A'}</Data></Cell>
           <Cell><Data ss:Type="String">${row.mapLink || 'N/A'}</Data></Cell>
-          <Cell><Data ss:Type="String">${(row.address || 'N/A').replace(/[<>&"']/g, function(match) {
-            switch(match) {
-              case '<': return '&lt;';
-              case '>': return '&gt;';
-              case '&': return '&amp;';
-              case '"': return '&quot;';
-              case "'": return '&apos;';
-              default: return match;
-            }
-          })}</Data></Cell>
+          <Cell><Data ss:Type="String">${(row.address || 'N/A').replace(/[<>&"']/g, function (match) {
+        switch (match) {
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '&': return '&amp;';
+          case '"': return '&quot;';
+          case "'": return '&apos;';
+          default: return match;
+        }
+      })}</Data></Cell>
         </Row>`;
     });
 
@@ -497,10 +497,10 @@ const AttendanceHistory = ({ attendanceData, isLoading, userRole }) => {
       </Workbook>`;
 
     // Create and download the file
-    const blob = new Blob([excelContent], { 
-      type: 'application/vnd.ms-excel;charset=utf-8;' 
+    const blob = new Blob([excelContent], {
+      type: 'application/vnd.ms-excel;charset=utf-8;'
     });
-    
+
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
@@ -558,7 +558,7 @@ const AttendanceHistory = ({ attendanceData, isLoading, userRole }) => {
             <h2 className="text-2xl font-bold text-white">Attendance History</h2>
             <p className="text-blue-50">Your records are displayed below.</p>
           </div>
-          
+
           {/* Excel Download Button Only */}
           {userRole?.toLowerCase() === "admin" && filteredData.length > 0 && (
             <div className="flex gap-2">
@@ -568,7 +568,7 @@ const AttendanceHistory = ({ attendanceData, isLoading, userRole }) => {
                 title="Download as Excel"
               >
                 <Download className="h-4 w-4" />
-                Download 
+                Download
               </button>
             </div>
           )}
@@ -668,7 +668,7 @@ const AttendanceHistory = ({ attendanceData, isLoading, userRole }) => {
               No Records Found
             </h3>
             <p className="text-slate-500">
-              {userRole?.toLowerCase() === "admin" 
+              {userRole?.toLowerCase() === "admin"
                 ? "No attendance records available."
                 : "You haven't marked any attendance yet."}
             </p>
@@ -719,15 +719,14 @@ const AttendanceHistory = ({ attendanceData, isLoading, userRole }) => {
                       </div>
                     </td>
                     <td className="px-4 py-3 border-r border-slate-200/50 w-24">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        record.status === "IN"
-                          ? "bg-green-100 text-green-800"
-                          : record.status === "OUT"
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${record.status === "IN"
+                        ? "bg-green-100 text-green-800"
+                        : record.status === "OUT"
                           ? "bg-red-100 text-red-800"
                           : record.status === "Leave"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}>
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}>
                         {record.status || "N/A"}
                       </span>
                     </td>
@@ -802,6 +801,22 @@ const Attendance = () => {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  };
+
+  // Haversine formula to calculate distance in meters
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // metres
+    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
   };
 
   const formatDateTime = (date) => {
@@ -927,7 +942,7 @@ const Attendance = () => {
       (record) =>
         record.salesPersonName === salesPersonName &&
         record.dateTime?.split(" ")[0].toString() ===
-          formatDateDDMMYYYY(new Date())
+        formatDateDDMMYYYY(new Date())
     );
 
     if (userRecords.length === 0) {
@@ -963,7 +978,7 @@ const Attendance = () => {
         formData.startDate &&
         formData.endDate &&
         new Date(formData.endDate + "T00:00:00") <
-          new Date(formData.startDate + "T00:00:00")
+        new Date(formData.startDate + "T00:00:00")
       ) {
         newErrors.endDate = "End date cannot be before start date";
       }
@@ -1055,15 +1070,15 @@ const Attendance = () => {
         (entry) =>
           entry.salesPersonName === salesPersonName &&
           entry.dateTime?.split(" ")[0].toString() ===
-            formatDateDDMMYYYY(new Date())
+          formatDateDDMMYYYY(new Date())
       );
 
       const filteredHistoryData =
         userRole.toLowerCase() === "admin"
           ? formattedHistory
           : formattedHistory.filter(
-              (entry) => entry.salesPersonName === salesPersonName
-            );
+            (entry) => entry.salesPersonName === salesPersonName
+          );
 
       filteredHistory.sort((a, b) => {
         const parseGvizDate = (dateString) => {
@@ -1181,6 +1196,34 @@ const Attendance = () => {
         return;
       }
 
+      // Geofencing Check
+      if (currentUser?.employeeType === "In Office" && currentLocation) {
+        if (!currentUser.officeLat || !currentUser.officeLong || !currentUser.officeRange) {
+          // If office details are missing but user is In Office, maybe allow or block? 
+          // Blocking for safety, or alerting.
+          // For now, let's alert and block.
+          showToast("Office location settings missing for In Office employee.", "error");
+          setIsSubmitting(false);
+          setIsGettingLocation(false);
+          return;
+        }
+
+        const distance = calculateDistance(
+          currentLocation.latitude,
+          currentLocation.longitude,
+          currentUser.officeLat,
+          currentUser.officeLong
+        );
+
+        // Range is in meters. calculateDistance returns meters.
+        if (distance > currentUser.officeRange) {
+          showToast(`You are out of office range (${Math.round(distance)}m). Allowed: ${currentUser.officeRange}m`, "error");
+          setIsSubmitting(false);
+          setIsGettingLocation(false);
+          return;
+        }
+      }
+
       setIsGettingLocation(false);
 
       const currentDate = new Date();
@@ -1190,8 +1233,8 @@ const Attendance = () => {
         formData.status === "IN" || formData.status === "OUT"
           ? formatDateTime(currentDate)
           : formData.startDate
-          ? formatDateTime(new Date(formData.startDate + "T00:00:00"))
-          : "";
+            ? formatDateTime(new Date(formData.startDate + "T00:00:00"))
+            : "";
 
       const endDateForLeave = formData.endDate
         ? formatDateTime(new Date(formData.endDate + "T00:00:00"))
@@ -1232,8 +1275,8 @@ const Attendance = () => {
           formData.status === "IN"
             ? "Check-in successful!"
             : formData.status === "OUT"
-            ? "Check-out successful!"
-            : "Leave application submitted successfully!";
+              ? "Check-out successful!"
+              : "Leave application submitted successfully!";
         showToast(successMessage, "success");
 
         setFormData({
@@ -1269,8 +1312,8 @@ const Attendance = () => {
           formData.status === "IN"
             ? "Check-in successful!"
             : formData.status === "OUT"
-            ? "Check-out successful!"
-            : "Leave application submitted successfully!";
+              ? "Check-out successful!"
+              : "Leave application submitted successfully!";
         showToast(successMessage, "success");
 
         setFormData({
@@ -1295,7 +1338,7 @@ const Attendance = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name === "status" && value === "Leave") {
       if (hasCheckedInToday) {
         setFormData((prev) => ({
@@ -1346,7 +1389,7 @@ const Attendance = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-0 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Attendance Summary Card */}
-        <AttendanceSummaryCard 
+        <AttendanceSummaryCard
           attendanceData={historyAttendance}
           isLoading={isLoadingHistory}
           userRole={userRole}
@@ -1373,9 +1416,8 @@ const Attendance = () => {
                   name="status"
                   value={formData.status}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 bg-white border rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 text-slate-700 font-medium ${
-                    errors.status ? "border-red-300" : "border-slate-200"
-                  }`}
+                  className={`w-full px-4 py-3 bg-white border rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 text-slate-700 font-medium ${errors.status ? "border-red-300" : "border-slate-200"
+                    }`}
                 >
                   <option value="">Select status</option>
                   <option value="IN">IN</option>

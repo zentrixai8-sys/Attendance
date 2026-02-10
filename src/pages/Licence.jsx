@@ -29,7 +29,7 @@ const License = () => {
                 © BOTIVATE SERVICES LLP
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                This software is developed exclusively by Botivate Services LLP for use by its clients.
+                This software is developed exclusively by Zentrix Services LLP for use by its clients.
                 Unauthorized use, distribution, or copying of this software is strictly prohibited and may
                 result in legal action.
               </p>

@@ -17,8 +17,8 @@ const Advance = () => {
     const salesPersonName = currentUser?.salesPersonName || "Unknown User";
     const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'Admin';
 
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwve2gvQqFeo_OAkIBVS5uzKX92fZJAEyYtgE0GWQPlxs-3r-ofYA00_mEM19LumWIUg/exec";
-    const SPREADSHEET_ID = "1WTT8ZQhtf1yeSChNn2uJeW5Tz2TvYjQLrxhTx5l4Fgw";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2k73Y40yVytGHKfS0NMV5Ct72rgMkfD0JUj7ZKpYSr3PjZeWnOrMR8Lr1bnvDDIUH/exec";
+    const SPREADSHEET_ID = "1q9fSzJEIj7QpmHEVlAuvgkUaU7VGOJpyF171TiWGrdA";
 
     const formatDateInput = (date) => {
         return date.toISOString().split("T")[0];

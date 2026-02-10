@@ -19,7 +19,7 @@ const Report = () => {
   const [modalTitle, setModalTitle] = useState('');
   const [modalType, setModalType] = useState('');
 
-  const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwve2gvQqFeo_OAkIBVS5uzKX92fZJAEyYtgE0GWQPlxs-3r-ofYA00_mEM19LumWIUg/exec";
+  const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2k73Y40yVytGHKfS0NMV5Ct72rgMkfD0JUj7ZKpYSr3PjZeWnOrMR8Lr1bnvDDIUH/exec";
 
   useEffect(() => {
     fetchData();

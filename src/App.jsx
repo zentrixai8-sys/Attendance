@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, createContext } from "react";
@@ -30,7 +29,7 @@ const App = () => {
   const [tabs, setTabs] = useState([]);
 
   // Spreadsheet ID for Google Sheets data
-  const SPREADSHEET_ID = "1WTT8ZQhtf1yeSChNn2uJeW5Tz2TvYjQLrxhTx5l4Fgw";
+  const SPREADSHEET_ID = "1q9fSzJEIj7QpmHEVlAuvgkUaU7VGOJpyF171TiWGrdA";
 
   useEffect(() => {
     const auth = localStorage.getItem("isAuthenticated");
@@ -48,8 +47,7 @@ const App = () => {
 
   const login = async (username, password) => {
     try {
-      const masterSheetUrl =
-        `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=Master`;
+      const masterSheetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=Master`;
       const response = await fetch(masterSheetUrl);
       const text = await response.text();
 
@@ -59,18 +57,20 @@ const App = () => {
       const data = JSON.parse(jsonData);
 
       if (!data?.table?.rows) {
-        showNotification("Failed to fetch user data from Master sheet.", "error");
+        showNotification(
+          "Failed to fetch user data from Master sheet.",
+          "error",
+        );
         return false;
       }
 
       const rows = data.table.rows;
 
       const foundUserRow = rows.find(
-        (row) => row.c?.[1]?.v === username && row.c?.[2]?.v === password
+        (row) => row.c?.[1]?.v === username && row.c?.[2]?.v === password,
       );
 
       if (foundUserRow) {
-
         const accessValue = foundUserRow.c?.[4]?.v;
         let userTabs = [];
 
@@ -81,13 +81,16 @@ const App = () => {
             "Attendance",
             "Video",
             "License",
-            "Local Travel",       
+            "Local Travel",
             "Local Travel History",
             "OTR",
             "Report",
           ];
-        } else if (accessValue && typeof accessValue === 'string') {
-          userTabs = accessValue.split(",").map((t) => t.trim()).filter(Boolean);
+        } else if (accessValue && typeof accessValue === "string") {
+          userTabs = accessValue
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean);
         }
 
         const userInfo = {
@@ -98,7 +101,6 @@ const App = () => {
           tabs: userTabs,
         };
 
-
         setIsAuthenticated(true);
         setCurrentUser(userInfo);
         setUserType(userInfo.role);
@@ -108,7 +110,10 @@ const App = () => {
         localStorage.setItem("currentUser", JSON.stringify(userInfo));
         localStorage.setItem("userType", userInfo.role);
 
-        showNotification(`Welcome, ${userInfo.salesPersonName || username}!`, "success");
+        showNotification(
+          `Welcome, ${userInfo.salesPersonName || username}!`,
+          "success",
+        );
         return true;
       } else {
         showNotification("Invalid username or password", "error");
@@ -142,13 +147,12 @@ const App = () => {
     if (adminOnly && !isAdmin()) {
       showNotification(
         "You don't have permission to access this page",
-        "error"
+        "error",
       );
       return <Navigate to="/attendance" />;
     }
     return children;
   };
-
 
   return (
     <AuthContext.Provider
@@ -177,17 +181,19 @@ const App = () => {
           )}
 
           <div
-            className={`flex flex-col flex-1 overflow-hidden ${isAuthenticated ? "md:ml-64" : ""
-              }`}
+            className={`flex flex-col flex-1 overflow-hidden ${
+              isAuthenticated ? "md:ml-64" : ""
+            }`}
           >
             {notification && (
               <div
-                className={`p-4 text-sm ${notification.type === "error"
-                  ? "bg-red-100 text-red-700"
-                  : notification.type === "success"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-blue-100 text-blue-700"
-                  }`}
+                className={`p-4 text-sm ${
+                  notification.type === "error"
+                    ? "bg-red-100 text-red-700"
+                    : notification.type === "success"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-blue-100 text-blue-700"
+                }`}
               >
                 {notification.message}
               </div>
@@ -198,7 +204,13 @@ const App = () => {
                 <Routes>
                   <Route
                     path="/login"
-                    element={!isAuthenticated ? <Login /> : <Navigate to="/attendance" />}
+                    element={
+                      !isAuthenticated ? (
+                        <Login />
+                      ) : (
+                        <Navigate to="/attendance" />
+                      )
+                    }
                   />
                   <Route
                     path="/travel"
@@ -255,7 +267,6 @@ const App = () => {
                         <LocalTravelHistory />
                       </ProtectedRoute>
                     }
-      
                   />
 
                   <Route
@@ -265,18 +276,16 @@ const App = () => {
                         <Report />
                       </ProtectedRoute>
                     }
-      
                   />
 
-
                   <Route
-                  path="/advance"
-                      element={
-                        <ProtectedRoute>
-                       <AdvanceRequest />
-                       </ProtectedRoute>
-                         }
-                      />
+                    path="/advance"
+                    element={
+                      <ProtectedRoute>
+                        <AdvanceRequest />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route path="*" element={<Navigate to="/attendance" />} />
                 </Routes>
               </div>
@@ -285,12 +294,12 @@ const App = () => {
                 <p className="text-sm font-medium">
                   Powered by{" "}
                   <a
-                    href="https://www.botivate.in/"
+                    href="https://zentrix-dv.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline hover:text-yellow-300 transition"
                   >
-                    Botivate
+                    Zentrix
                   </a>
                 </p>
               </footer>

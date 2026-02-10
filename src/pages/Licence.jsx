@@ -26,7 +26,7 @@ const License = () => {
           <div className="bg-blue-50 rounded-xl border border-blue-200 p-8">
             <div className="text-center">
               <h2 className="text-xl font-bold text-gray-800 mb-4">
-                © BOTIVATE SERVICES LLP
+                © ZENTRIX SERVICES LLP
               </h2>
               <p className="text-gray-600 leading-relaxed">
                 This software is developed exclusively by Zentrix Services LLP for use by its clients.
@@ -50,22 +50,22 @@ const License = () => {
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
                   <a 
-                    href="mailto:info@botivate.in" 
+                    href="mailto:zentrix.ai@gmail.com" 
                     className="text-blue-600 hover:text-blue-800 transition-colors"
                   >
-                    info@botivate.in
+                    zentrix.ai@gmail.com
                   </a>
                 </div>
                 
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 bg-blue-400 rounded-full"></div>
                   <a 
-                    href="https://www.botivate.in/" 
+                    href="https://www.https://zentrix-dv.vercel.app//" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800 transition-colors"
                   >
-                    www.botivate.in
+                    www.https://zentrix-dv.vercel.app/
                   </a>
                 </div>
               </div>

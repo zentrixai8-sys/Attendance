@@ -783,7 +783,7 @@ const Attendance = () => {
 
   const SPREADSHEET_ID = "1q9fSzJEIj7QpmHEVlAuvgkUaU7VGOJpyF171TiWGrdA";
   const APPS_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbx2k73Y40yVytGHKfS0NMV5Ct72rgMkfD0JUj7ZKpYSr3PjZeWnOrMR8Lr1bnvDDIUH/exec";
+    "https://script.google.com/macros/s/AKfycbxELGLIh9zQPHlepi41mRex5rmMd9Kums8Ih6n0nDlGG_fNeZq1T5BXfkuYT7u8FsUi/exec";
 
   const formatDateInput = (date) => {
     return date.toISOString().split("T")[0];

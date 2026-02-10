@@ -33,7 +33,7 @@ const AdminSettings = () => {
   ];
 
   const SPREADSHEET_ID = "1q9fSzJEIj7QpmHEVlAuvgkUaU7VGOJpyF171TiWGrdA";
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2k73Y40yVytGHKfS0NMV5Ct72rgMkfD0JUj7ZKpYSr3PjZeWnOrMR8Lr1bnvDDIUH/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxELGLIh9zQPHlepi41mRex5rmMd9Kums8Ih6n0nDlGG_fNeZq1T5BXfkuYT7u8FsUi/exec";
 
   useEffect(() => {
     fetchUsers();
@@ -42,7 +42,7 @@ const AdminSettings = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const masterSheetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=Master`;
+      const masterSheetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=Master&headers=1`;
       const response = await fetch(masterSheetUrl);
       const text = await response.text();
 
@@ -316,8 +316,8 @@ const AdminSettings = () => {
                         <span>{user.username}</span>
                         <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
                         <span className={`px-2 py-0.5 rounded-full text-xs ${user.role === 'admin'
-                            ? 'bg-purple-100 text-purple-700'
-                            : 'bg-emerald-100 text-emerald-700'
+                          ? 'bg-purple-100 text-purple-700'
+                          : 'bg-emerald-100 text-emerald-700'
                           }`}>
                           {user.role}
                         </span>

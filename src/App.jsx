@@ -48,7 +48,7 @@ const App = () => {
 
   const login = async (username, password) => {
     try {
-      const masterSheetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=Master`;
+      const masterSheetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=Master&headers=1`;
       const response = await fetch(masterSheetUrl);
       const text = await response.text();
 
@@ -66,9 +66,26 @@ const App = () => {
       }
 
       const rows = data.table.rows;
+      console.log("Login Debug - All Rows:", rows);
+      console.log("Login Debug - Attempting to match:", { username, password });
 
       const foundUserRow = rows.find(
-        (row) => row.c?.[1]?.v === username && row.c?.[2]?.v === password,
+        (row) => {
+          const sheetUsername = row.c?.[1]?.v;
+          const sheetPassword = row.c?.[2]?.v;
+
+          // Convert to string and trim to ensure robust matching
+          const cleanSheetUser = String(sheetUsername || "").trim();
+          const cleanInputUser = String(username || "").trim();
+          const cleanSheetPass = String(sheetPassword || "").trim();
+          const cleanInputPass = String(password || "").trim();
+
+          // console.log("Checking:", { cleanSheetUser, cleanInputUser }); // Debug
+
+          // Check username (case-insensitive) and password (exact match)
+          return cleanSheetUser.toLowerCase() === cleanInputUser.toLowerCase() &&
+            cleanSheetPass === cleanInputPass;
+        }
       );
 
       if (foundUserRow) {
@@ -100,10 +117,10 @@ const App = () => {
           role: foundUserRow.c?.[3]?.v || "user",
           loginTime: new Date().toISOString(),
           tabs: userTabs,
-          employeeType: foundUserRow.c?.[5]?.v || "Out Of Office",
-          officeLat: foundUserRow.c?.[6]?.v || null,
-          officeLong: foundUserRow.c?.[7]?.v || null,
-          officeRange: foundUserRow.c?.[8]?.v || null,
+          employeeType: foundUserRow.c?.[5]?.v || "Out Of Office", // Col F: Employee Type
+          officeLat: foundUserRow.c?.[6]?.v || null, // Col G: latitude
+          officeLong: foundUserRow.c?.[7]?.v || null, // Col H: longitude
+          officeRange: foundUserRow.c?.[8]?.v || null, // Col I: Range
         };
 
         setIsAuthenticated(true);

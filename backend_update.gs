@@ -45,7 +45,7 @@ function doPost(e) {
 
     // Handle file upload
     if (params.action === "uploadFile") {
-      const { fileName, fileData, mimeType = 'image/jpeg', folderId = "1QAxpUr5L4UMjgTpazbFj8lWzFvf_Y4Sz" } = params;
+      const { fileName, fileData, mimeType = 'image/jpeg', folderId = "13QyftmxU2K7JX52YPBf-vhH2ZXJs-w_S" } = params;
 
       if (!fileData || !fileName) {
         return setCorsHeaders(ContentService.createTextOutput(
@@ -362,7 +362,7 @@ function updateUserAccess(username, accessString) {
     // Assuming Row 1 is header, data starts at row 2 (index 1)
     for (let i = 1; i < data.length; i++) {
       if (data[i][1] == username) { // Column B is username (index 1)
-         // Column E is Access (index 4)
+         // Column E is Access (index 4 in 0-based array)
          // getRange(row, col) is 1-indexed. Row is i+1, Col is 5 (E)
          sheet.getRange(i + 1, 5).setValue(accessString);
          return { success: true, message: "Access updated successfully" };
@@ -388,18 +388,19 @@ function addUser(userData) {
         }
     }
 
-    // Append new user
-    // Columns: Name, Username, Password, Role, Access, Employee Type, latitude, longitude, Range
+    // Column Mapping based on Master Sheet:
+    // A: Name (0), B: Username (1), C: Password (2), D: Role/Admin (3), E: Access (4)
+    // F: Employee Type (5), G: Latitude (6), H: Longitude (7), I: Range (8)
     const newRow = [
-        userData.name,
-        userData.username,
-        userData.password,
-        userData.role || "user",
-        userData.access || "all",
-        userData.employeeType || "Out Of Office",
-        userData.latitude || "",
-        userData.longitude || "",
-        userData.range || ""
+        userData.name,          // Col A: Person Name
+        userData.username,      // Col B: User Name
+        userData.password,      // Col C: Password
+        userData.role || "user", // Col D: admin
+        userData.access || "all", // Col E: Access
+        userData.employeeType || "Out Of Office", // Col F: Employee Type
+        userData.latitude || "",  // Col G: latitude
+        userData.longitude || "", // Col H: longitude
+        userData.range || ""      // Col I: Range
     ];
     
     // Ensure we are appending to the next available row
